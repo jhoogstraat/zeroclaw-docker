@@ -1,0 +1,14 @@
+[Unit]
+Description=Zeroclaw Container
+
+[Container]
+Image=ghcr.io/jhoogstraat/zeroclaw-docker:latest
+ContainerName=zeroclaw
+Volume=zeroclaw-data:/zeroclaw-data
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
