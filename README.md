@@ -7,23 +7,19 @@ Container image for running `zeroclaw` with persistent workspace data at `/zeroc
 Run interactive onboarding and persist data by mounting `/zeroclaw-data`:
 
 ```bash
-docker run --rm -it -v zeroclaw-data:/zeroclaw-data \
-  ghcr.io/jhoogstraat/zeroclaw-docker:latest \
-  onboard --interactive
+docker run --rm -it -v zeroclaw-data:/zeroclaw-data ghcr.io/jhoogstraat/zeroclaw-docker:latest zeroclaw onboard --interactive
+```
+
+## Start
+
+```bash
+docker run -d --name zeroclaw -v zeroclaw-data:/zeroclaw-data ghcr.io/jhoogstraat/zeroclaw-docker:latest
 ```
 
 Notes:
 - The image entrypoint is `zeroclaw`, so `onboard --interactive` is passed as arguments to it.
 - Use the same volume (`zeroclaw-data`) for future runs so config/state is reused.
 - The volume can also be a local directory (like `./zeroclaw`)
-
-## Start
-
-```bash
-docker run -d --name zeroclaw \
-  -v zeroclaw-data:/zeroclaw-data \
-  ghcr.io/jhoogstraat/zeroclaw-docker:latest
-```
 
 ## Executing commands
 
