@@ -38,12 +38,6 @@ docker exec -it zeroclaw zeroclaw
 
 A ready example is included at `compose.yaml`.
 
-Set your GHCR owner once:
-
-```bash
-export GHCR_OWNER=<github-owner>
-```
-
 Run onboarding:
 
 ```bash
