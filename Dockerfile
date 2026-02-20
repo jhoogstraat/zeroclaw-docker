@@ -27,7 +27,7 @@ RUN mkdir /zeroclaw-data
 #
 ENV ZEROCLAW_WORKSPACE=/zeroclaw-data/workspace
 ENV SHELL=/usr/bin/zsh
-ENV HOME=/openclaw-data
+ENV HOME=/zeroclaw-data
 
 WORKDIR /zeroclaw-data
 
