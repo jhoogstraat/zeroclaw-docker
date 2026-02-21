@@ -34,7 +34,7 @@ WORKDIR /zeroclaw-data
 ARG ZEROCLAW_VERSION=latest
 COPY --from=ghcr.io/zeroclaw-labs/zeroclaw:${ZEROCLAW_VERSION} /usr/local/bin/zeroclaw /usr/local/bin/zeroclaw
 
-EXPOSE 3000
+EXPOSE 42617
 
 ENTRYPOINT ["tini", "--"]
 CMD ["zeroclaw", "daemon"]
