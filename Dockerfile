@@ -1,3 +1,5 @@
+ARG ZEROCLAW_VERSION=latest
+FROM ghcr.io/zeroclaw-labs/zeroclaw:${ZEROCLAW_VERSION} AS zeroclaw_upstream
 FROM debian:13-slim
 
 RUN <<EOR
@@ -31,8 +33,7 @@ ENV HOME=/zeroclaw-data
 
 WORKDIR /zeroclaw-data
 
-ARG ZEROCLAW_VERSION=latest
-COPY --from=ghcr.io/zeroclaw-labs/zeroclaw:${ZEROCLAW_VERSION} /usr/local/bin/zeroclaw /usr/local/bin/zeroclaw
+COPY --from=zeroclaw_upstream /usr/local/bin/zeroclaw /usr/local/bin/zeroclaw
 
 EXPOSE 42617
 
