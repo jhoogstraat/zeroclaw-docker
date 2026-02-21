@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
     paths:
       - Dockerfile
     tags:
@@ -27,6 +26,45 @@ jobs:
         run: |
           owner_lc="${GITHUB_REPOSITORY_OWNER,,}"
           echo "image=ghcr.io/${owner_lc}/zeroclaw-docker" >> "$GITHUB_OUTPUT"
+
+      - name: Check upstream image version
+        id: version_check
+        run: |
+          set -euo pipefail
+
+          upstream_version="$(skopeo list-tags docker://ghcr.io/zeroclaw-labs/zeroclaw | jq -r '.Tags[]' | grep '^v' | sort -V | tail -n 1)"
+          local_version="$(skopeo list-tags docker://ghcr.io/jhoogstraat/zeroclaw-docker | jq -r '.Tags[]' | grep '^v' | sort -V | tail -n 1 || true)"
+
+          if [ -z "$upstream_version" ]; then
+            echo "Failed to determine upstream version for ghcr.io/zeroclaw-labs/zeroclaw" >&2
+            exit 1
+          fi
+
+          has_newer=false
+          if [ -z "${local_version:-}" ]; then
+            has_newer=true
+          elif [ "$upstream_version" != "$local_version" ] && \
+               [ "$(printf '%s\n%s\n' "$upstream_version" "$local_version" | sort -V | tail -n 1)" = "$upstream_version" ]; then
+            has_newer=true
+          fi
+
+          echo "upstream_version=$upstream_version"
+          echo "local_version=${local_version:-none}"
+          echo "has_newer=$has_newer"
+          echo "github_run_id=${{ github.run_id }}"
+
+          if [ "$has_newer" != "true" ]; then
+            echo "No newer upstream version found. Canceling this run."
+            gh run cancel "${{ github.run_id }}"
+            gh run watch "${{ github.run_id }}" || true
+            exit 0
+          fi
+
+          echo "upstream_version=$upstream_version" >> "$GITHUB_OUTPUT"
+          echo "local_version=${local_version:-}" >> "$GITHUB_OUTPUT"
+          echo "New upstream version found; continuing."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -58,7 +96,11 @@ jobs:
           file: ./Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            ZEROCLAW_VERSION=${{ steps.version_check.outputs.upstream_version }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ steps.vars.outputs.image }}:${{ steps.version_check.outputs.upstream_version }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

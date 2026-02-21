@@ -31,7 +31,8 @@ ENV HOME=/zeroclaw-data
 
 WORKDIR /zeroclaw-data
 
-COPY --from=ghcr.io/zeroclaw-labs/zeroclaw:latest /usr/local/bin/zeroclaw /usr/local/bin/zeroclaw
+ARG ZEROCLAW_VERSION=latest
+COPY --from=ghcr.io/zeroclaw-labs/zeroclaw:${ZEROCLAW_VERSION} /usr/local/bin/zeroclaw /usr/local/bin/zeroclaw
 
 EXPOSE 3000
 
