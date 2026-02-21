@@ -17,7 +17,7 @@ docker run -d --name zeroclaw -v zeroclaw-data:/zeroclaw-data ghcr.io/jhoogstraa
 ```
 
 Notes:
-- The image entrypoint is `zeroclaw`, so `onboard --interactive` is passed as arguments to it.
+- `zeroclaw daemon` is executed by default when no command is provided.
 - Use the same volume (`zeroclaw-data`) for future runs so config/state is reused.
 - The volume can also be a local directory (like `./zeroclaw`)
 
